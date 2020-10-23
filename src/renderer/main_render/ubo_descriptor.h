@@ -15,6 +15,8 @@ struct UBO {
     
     glm::vec4 viewpos;
     
+    glm::vec2 screensize;
+    
 };
 
 class Context;
@@ -36,3 +38,4 @@ private:
 };
 
 #endif
+

@@ -70,7 +70,7 @@ void Renderer::resize() {
         
         ctx.swap.setup();
         
-        ctx.camera.setup(ctx.swap.extent.width, ctx.swap.extent.height);
+        ctx.camera.setup();
         
         ctx.main_render.setup();
     

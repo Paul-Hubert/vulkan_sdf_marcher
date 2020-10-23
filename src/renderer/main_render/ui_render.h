@@ -9,7 +9,6 @@
 #include "renderer/num_frames.h"
 
 class Context;
-class Renderpass;
 
 // Frame data
 class FrameDataForRender {
@@ -24,12 +23,12 @@ public:
 
 class UIRender {
 public:
-    UIRender(Context& ctx, Renderpass& renderpass);
+    UIRender(Context& ctx);
     ~UIRender();
     
     void createOrResizeBuffer(vk::Buffer& buffer, vk::DeviceMemory& buffer_memory, vk::DeviceSize& p_buffer_size, size_t new_size,vk::BufferUsageFlagBits usage);
     
-    void render(vk::CommandBuffer commandBuffer, uint32_t i);
+    void render(vk::CommandBuffer commandBuffer);
     
     vk::DescriptorPool descPool;
     vk::DescriptorSetLayout descLayout;
@@ -47,7 +46,7 @@ private:
     
     Context& ctx;
     
-    void initPipeline(vk::RenderPass);
+    void initPipeline();
     
 };
 

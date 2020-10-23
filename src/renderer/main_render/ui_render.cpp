@@ -1,14 +1,13 @@
 #include "ui_render.h"
 
 #include "renderer/context.h"
-#include "renderpass.h"
 
 #include "imgui/imgui.h"
 
 #include "renderer/num_frames.h"
 #include "util/util.h"
 
-UIRender::UIRender(Context& ctx, Renderpass& renderpass) : ctx(ctx) {
+UIRender::UIRender(Context& ctx) : ctx(ctx) {
     
     auto& io = ImGui::GetIO();
     
@@ -59,7 +58,7 @@ UIRender::UIRender(Context& ctx, Renderpass& renderpass) : ctx(ctx) {
         
     ctx.device->updateDescriptorSets({vk::WriteDescriptorSet(descSet, 0, 0, 1, vk::DescriptorType::eCombinedImageSampler, &info, 0, 0)}, {});
     
-    initPipeline(renderpass);
+    initPipeline();
     
 }
 
@@ -83,7 +82,7 @@ void UIRender::createOrResizeBuffer(vk::Buffer& buffer, vk::DeviceMemory& buffer
     
 }
 
-void UIRender::render(vk::CommandBuffer commandBuffer, uint32_t i) {
+void UIRender::render(vk::CommandBuffer commandBuffer) {
 
     ImGui::Render();
     
@@ -95,7 +94,7 @@ void UIRender::render(vk::CommandBuffer commandBuffer, uint32_t i) {
     if (fb_width <= 0 || fb_height <= 0 || draw_data->TotalVtxCount == 0)
         return;
 
-    FrameDataForRender* fd = &g_FramesDataBuffers[i];
+    FrameDataForRender* fd = &g_FramesDataBuffers[ctx.frame_index];
 
     // Create the Vertex and Index buffers:
     size_t vertex_size = draw_data->TotalVtxCount * sizeof(ImDrawVert);
@@ -199,7 +198,7 @@ void UIRender::render(vk::CommandBuffer commandBuffer, uint32_t i) {
     
 }
 
-void UIRender::initPipeline(vk::RenderPass renderpass) {
+void UIRender::initPipeline() {
     
     // PIPELINE INFO
     
@@ -351,7 +350,7 @@ void UIRender::initPipeline(vk::RenderPass renderpass) {
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynInfo;
     pipelineInfo.layout = static_cast<VkPipelineLayout>(pipelineLayout);
-    pipelineInfo.renderPass = static_cast<VkRenderPass>(renderpass);
+    pipelineInfo.renderPass = static_cast<VkRenderPass>(ctx.main_render.renderpass);
     pipelineInfo.subpass = 0;
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;

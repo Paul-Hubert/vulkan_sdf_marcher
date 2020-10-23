@@ -1,6 +1,6 @@
 #include "context.h"
 
-Context::Context() : win(), input(*this), ui(*this), instance(*this), device(*this), transfer(*this), swap(*this), camera(swap.extent.width, swap.extent.height), main_render(*this), waitsems(swap.num_frames), signalsems(swap.num_frames), computesems(swap.num_frames) {
+Context::Context() : win(), input(*this), ui(*this), instance(*this), device(*this), transfer(*this), swap(*this), camera(*this), main_render(*this), waitsems(swap.num_frames), signalsems(swap.num_frames), computesems(swap.num_frames) {
     
     for(size_t i = 0; i < waitsems.size(); i++) {
         waitsems[i] = device->createSemaphore({});

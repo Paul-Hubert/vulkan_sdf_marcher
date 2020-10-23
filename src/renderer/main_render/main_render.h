@@ -2,8 +2,9 @@
 #define MAIN_RENDER_H
 
 #include "renderpass.h"
-#include "ui_render.h"
 #include "ubo_descriptor.h"
+#include "ray_marcher.h"
+#include "ui_render.h"
 
 #include "renderer/vmapp.h"
 
@@ -21,12 +22,17 @@ public:
     void cleanup();
     ~MainRender();
     
-private:
-    Context& ctx;
     
     Renderpass renderpass;
+    
     UBODescriptor ubo;
+    
+    RayMarcher ray_marcher;
+    
     UIRender ui_render;
+    
+private:
+    Context& ctx;
     
     vk::CommandPool commandPool;
     std::array<vk::CommandBuffer, NUM_FRAMES> commandBuffers;

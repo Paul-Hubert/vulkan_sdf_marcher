@@ -25,7 +25,6 @@ Input::Input(Context& ctx) : ctx(ctx) {
     int w, h;
     SDL_GetWindowSize(ctx.win, &w, &h);
     SDL_WarpMouseInWindow(ctx.win, w / 2, h / 2);
-    mouseFree = true;
     
 }
 

@@ -3,14 +3,17 @@
 
 #include "glm/glm.hpp"
 
+class Context;
+class Player;
+
 constexpr float render_distance = 1000.f;
 constexpr float render_min = 0.1f;
 constexpr float render_fov = 70.f;
 
 class Camera {
 public:
-    Camera(int width, int height);
-    void setup(int width, int height);
+    Camera(Context& ctx);
+    void setup();
     void update();
     ~Camera();
     
@@ -21,6 +24,12 @@ public:
     glm::vec3 getViewPosition();
     
 private:
+    
+    Context& ctx;
+    
+    float yAxis;
+    float xAxis;
+    bool sprinting;
     
     glm::vec3 position;
     

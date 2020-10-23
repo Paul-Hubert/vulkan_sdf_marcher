@@ -3,6 +3,8 @@
 
 #include "context.h"
 
+class Player;
+
 class Renderer {
 public:
     Renderer();

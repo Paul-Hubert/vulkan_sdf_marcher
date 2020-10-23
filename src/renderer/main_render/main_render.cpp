@@ -4,7 +4,7 @@
 #include "util/util.h"
 #include "renderer/num_frames.h"
 
-MainRender::MainRender(Context& ctx) : ctx(ctx), renderpass(ctx), ubo(ctx), ui_render(ctx, renderpass) {
+MainRender::MainRender(Context& ctx) : renderpass(ctx), ubo(ctx), ray_marcher(ctx), ui_render(ctx), ctx(ctx) {
     
     commandPool = ctx.device->createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlagBits::eResetCommandBuffer, ctx.device.g_i));
     
@@ -39,6 +39,7 @@ void MainRender::render(uint32_t index, std::vector<vk::Semaphore> waits, std::v
     
     ubo.pointers[ctx.frame_index]->viewproj = ctx.camera.getViewProjection();
     ubo.pointers[ctx.frame_index]->viewpos = glm::vec4(ctx.camera.getViewPosition(), t);
+    ubo.pointers[ctx.frame_index]->screensize = glm::vec2(ctx.swap.extent.width, ctx.swap.extent.height);
     
     vk::CommandBuffer command = commandBuffers[ctx.frame_index];
         
@@ -53,7 +54,9 @@ void MainRender::render(uint32_t index, std::vector<vk::Semaphore> waits, std::v
     
     command.setScissor(0, vk::Rect2D(vk::Offset2D(), ctx.swap.extent));
     
-    ui_render.render(command, ctx.frame_index);
+    ray_marcher.render(command);
+    
+    ui_render.render(command);
     
     command.endRenderPass();
     

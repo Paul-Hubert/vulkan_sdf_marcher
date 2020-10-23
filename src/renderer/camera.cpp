@@ -1,38 +1,71 @@
 #include "camera.h"
 
-#include "device.h"
-#include "swapchain.h"
+#include "context.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
-Camera::Camera(int width, int height) {
-    setup(width, height);
+Camera::Camera(Context& ctx) : ctx(ctx) {
+    setup();
 }
 
-void Camera::setup(int width, int height) {
+void Camera::setup() {
     
-    projection = glm::perspective(render_fov, (float) width/height, render_min, render_distance);
+    projection = glm::perspective(render_fov, (float) ctx.swap.extent.width/ctx.swap.extent.height, render_min, render_distance);
     
 }
 
 void Camera::update() {
     
-    /*
-    auto player = reg.ctx<Util::Entity<"player"_hs>>();
-    CameraC& cam = reg.get<CameraC>(player);
-    auto pos = reg.get<PositionC>(player).pos;
-    pos.y += 1.80f;
+    if(ctx.input.mouseFree) return;
+    
+    constexpr float base_speed = 60.f/60;
+    
+    if(ctx.input.on[Action::SPRINT]) {
+        sprinting = true;
+    }
+    
+    float speed = sprinting ? base_speed * 10. : base_speed;
+    
+    bool moving = false;
+    if(ctx.input.on[Action::FORWARD]) {
+        position.x -= speed * std::sin(yAxis);//*dt;
+        position.z -= speed * std::cos(yAxis);//*dt;
+        moving = true;
+    } if(ctx.input.on[Action::BACKWARD]) {
+        position.x += speed * std::sin(yAxis);//*dt;
+        position.z += speed * std::cos(yAxis);//*dt;
+        moving = true;
+    } if(ctx.input.on[Action::LEFT]) {
+        position.x -= speed * std::sin(M_PI/2.0 + yAxis);//*dt;
+        position.z -= speed * std::cos(M_PI/2.0 + yAxis);//*dt;
+        moving = true;
+    } if(ctx.input.on[Action::RIGHT]) {
+        position.x += speed * std::sin(M_PI/2.0 + yAxis);//*dt;
+        position.z += speed * std::cos(M_PI/2.0 + yAxis);//*dt;
+        moving = true;
+    } if(ctx.input.on[Action::UP]) {
+        position.y += speed;
+        moving = true;
+    } if(ctx.input.on[Action::DOWN]) {
+        position.y -= speed;
+        moving = true;
+    }
+    
+    if(!moving) {
+        sprinting = false;
+    }
+    
+    yAxis -= (ctx.input.mouseDiff.x) * (M_PI*0.1/180.);
+    xAxis = std::max(std::min(xAxis - (ctx.input.mouseDiff.y) * (M_PI*0.1/180.), M_PI/2.), -M_PI/2.);
+    
     
     view = glm::mat4(1.0);
-    view = glm::translate(view, pos);
-    view = glm::rotate(view, (float) cam.yAxis, glm::vec3(0.0f, 1.0f, 0.0f));
-    view = glm::rotate(view, (float) cam.xAxis, glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::translate(view, position);
+    view = glm::rotate(view, (float) yAxis, glm::vec3(0.0f, 1.0f, 0.0f));
+    view = glm::rotate(view, (float) xAxis, glm::vec3(1.0f, 0.0f, 0.0f));
     view = glm::inverse(view);
     
     viewProjection = projection * view;
-    
-    position = pos;
-    */
     
 }
 
